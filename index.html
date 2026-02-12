@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Marked.js for Markdown -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Prism.js for syntax highlighting -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+<style>
+  body { margin:0; font-family: 'Inter', sans-serif; display: flex; height: 100vh; background:#1e1e1e; color:white; }
+  .sidebar { width: 250px; background: #252526; display: flex; flex-direction: column; }
+  .sidebar h2 { margin: 1rem; font-size: 1.2rem; }
+  .nav-item { padding: 0.8rem 1rem; cursor:pointer; border-left:4px solid transparent; }
+  .nav-item:hover { background:#2a2d2e; border-color:#007acc; }
+  .nav-item.active { background: rgba(0,122,204,0.2); border-color:#007acc; }
+  .content { flex:1; overflow:auto; padding:2rem; max-width:900px; margin:auto; }
+  .content pre { background:#1e1e1e; border:1px solid #3e3e42; border-radius:8px; padding:1rem; overflow-x:auto; }
+  .content h1 { font-size:2rem; margin-top:2rem; margin-bottom:1rem; }
+  .content h2 { font-size:1.5rem; margin-top:1.5rem; margin-bottom:0.8rem; }
+  .content h3 { font-size:1.2rem; margin-top:1rem; margin-bottom:0.5rem; }
+  .content p { margin-bottom:1rem; line-height:1.6; }
+  .content ul, .content ol { margin-left:2rem; margin-bottom:1rem; }
+
+  .sidebar-header {
+    padding: 1rem;
+  }
+
+  .sidebar-header img {
+    width: 60px;
+    height: 60px;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <img src="assets/logo.png" alt="Keycap Logo">
+  </div>
+  <h2>Keycap Docs</h2>
+  <div class="nav-item active" data-file="assets/docs/home.md">Home</div>
+  <div class="nav-item" data-file="assets/docs/installation.md">Installation</div>
+  <div class="nav-item" data-file="assets/docs/apikey.md">API key</div>
+  <div class="nav-item" data-file="assets/docs/features.md">Features</div>
+  <div class="nav-item" data-file="assets/docs/todo.md">ToDo</div>
+</div>
+
+<div class="content" id="content">Loading...</div>
+
+<script>
+  const contentDiv = document.getElementById('content');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  function loadMarkdown(file) {
+    fetch(file)
+      .then(res => res.text())
+      .then(md => {
+        contentDiv.innerHTML = marked.parse(md);
+        Prism.highlightAll(); // Highlight code
+      })
+      .catch(err => {
+        contentDiv.innerHTML = `<h1>Error loading page</h1><p>${err}</p>`;
+      });
+  }
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      // Remove active class
+      navItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+
+      const file = item.getAttribute('data-file');
+      loadMarkdown(file);
+    });
+  });
+
+  // Load first page by default
+  loadMarkdown('assets/docs/home.md');
+</script>
+
+</body>
+</html>
